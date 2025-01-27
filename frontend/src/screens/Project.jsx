@@ -4,7 +4,24 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import axios from '../config/axios'
 import { initializeSocket, receiveMessage, sendMessage } from '../config/socket'
 import Markdown from 'markdown-to-jsx'
+import hljs from 'highlight.js';
+import { getWebContainer } from '../config/WebContainer.js'
 
+
+function SyntaxHighlightedCode(props) {
+    const ref = useRef(null)
+
+    React.useEffect(() => {
+        if (ref.current && props.className?.includes('lang-') && window.hljs) {
+            window.hljs.highlightElement(ref.current)
+
+            // hljs won't reprocess the element unless this attribute is removed
+            ref.current.removeAttribute('data-highlighted')
+        }
+    }, [ props.className, props.children ])
+
+    return <code {...props} ref={ref} />
+}
 
 
 const Project = () => {
@@ -230,6 +247,8 @@ const Project = () => {
                                     <h1 className='font-semibold text-lg'>{user.email}</h1>
                                 </div>
                             )
+
+
                         })}
                     </div>
                 </div>
@@ -252,11 +271,17 @@ const Project = () => {
                                         className='font-semibold text-lg'
                                     >{file}</p>
                                 </button>))
+
                         }
                     </div>
+
                 </div>
+
+
                 <div className="code-editor flex flex-col flex-grow h-full shrink">
+
                     <div className="top flex justify-between w-full">
+
                         <div className="files flex">
                             {
                                 openFiles.map((file, index) => (
